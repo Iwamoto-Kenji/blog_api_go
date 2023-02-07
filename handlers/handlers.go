@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,8 +19,23 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 
 // POST /article のハンドラ
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Article...\n")
-	article := models.Article1
+	var reqBodybuffer []byte
+
+	if _, err := req.Body.Read(reqBodybuffer); !errors.Is(err, io.EOF) {
+		http.Error(w, "fail to get request body\n", http.StatusBadRequest)
+		return
+	}
+	defer req.Body.Close()
+
+	var reqArticle models.Article
+	if err := json.Unmarshal(reqBodybuffer, &reqArticle); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		return
+	}
+
+	//fmt.Printf("%+v\n", reqArticle)
+
+	article := reqArticle
 	jsonData, err := json.Marshal(article)
 	if err != nil {
 		http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
