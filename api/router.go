@@ -4,20 +4,18 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/Iwamoto-Kenji/blog_api_go/api/middlewares"
 	"github.com/Iwamoto-Kenji/blog_api_go/controllers"
 	"github.com/Iwamoto-Kenji/blog_api_go/services"
 	"github.com/gorilla/mux"
 )
 
 func NewRouter(db *sql.DB) *mux.Router {
-	r := mux.NewRouter()
-
-	// NewMyAppService 関数から得られるサービス層を使う
 	ser := services.NewMyAppService(db)
-	// そのサービス層とつながった状態で
-	// NewArticleController 関数・NewCommentController 関数から得られるコントローラ層を使う
 	aCon := controllers.NewArticleController(ser)
 	cCon := controllers.NewCommentController(ser)
+
+	r := mux.NewRouter()
 
 	r.HandleFunc("/hello", aCon.HelloHandler).Methods(http.MethodGet)
 
@@ -27,6 +25,8 @@ func NewRouter(db *sql.DB) *mux.Router {
 	r.HandleFunc("/article/nice", aCon.PostNiceHandler).Methods(http.MethodPost)
 
 	r.HandleFunc("/comment", cCon.PostCommentHandler).Methods(http.MethodPost)
+
+	r.Use(middlewares.LoggingMiddleware)
 
 	return r
 }
