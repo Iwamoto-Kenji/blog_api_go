@@ -3,7 +3,6 @@ package services
 import (
 	"database/sql"
 	"errors"
-	"sync"
 
 	"github.com/Iwamoto-Kenji/blog_api_go/apperrors"
 	"github.com/Iwamoto-Kenji/blog_api_go/models"
@@ -41,33 +40,40 @@ func (s *MyAppService) GetArticleListService(page int) ([]models.Article, error)
 // ArticleDetailHandlerで使うことを想定したサービス
 // 指定IDの記事情報を返却
 func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) {
+	type articleResult struct {
+		article models.Article
+		err     error
+	}
+	articleChan := make(chan articleResult)
+	defer close(articleChan)
+	go func(ch chan<- articleResult) {
+		article, err := repositories.SelectArticleDetail(s.db, articleID)
+		ch <- articleResult{article: article, err: err}
+	}(articleChan)
+
+	type commentResult struct {
+		commentList *[]models.Comment
+		err         error
+	}
+	commentChan := make(chan commentResult)
+	defer close(commentChan)
+	go func(ch chan<- commentResult) {
+		commentList, err := repositories.SelectCommentList(s.db, articleID)
+		ch <- commentResult{commentList: &commentList, err: err}
+	}(commentChan)
+
 	var article models.Article
 	var commentList []models.Comment
 	var articleGetErr, commentGetErr error
 
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	var amu sync.Mutex
-	var cmu sync.Mutex
-
-	go func(db *sql.DB, articleID int) {
-		defer wg.Done()
-		newarticle, err := repositories.SelectArticleDetail(db, articleID)
-		amu.Lock()
-		article, articleGetErr = newarticle, err
-		amu.Unlock()
-	}(s.db, articleID)
-
-	go func(db *sql.DB, articleID int) {
-		defer wg.Done()
-		newcommentList, err := repositories.SelectCommentList(db, articleID)
-		cmu.Lock()
-		commentList, commentGetErr = newcommentList, err
-		cmu.Unlock()
-	}(s.db, articleID)
-
-	wg.Wait()
+	for i := 0; i < 2; i++ {
+		select {
+		case ar := <-articleChan:
+			article, articleGetErr = ar.article, ar.err
+		case cr := <-commentChan:
+			commentList, commentGetErr = *cr.commentList, cr.err
+		}
+	}
 
 	if articleGetErr != nil {
 		if errors.Is(articleGetErr, sql.ErrNoRows) {
