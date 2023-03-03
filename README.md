@@ -31,6 +31,12 @@ mysql -h 127.0.0.1 -u docker sampledb -p < repositories/testdata/setupDB.sql
 use sampledb;
 ```
 
+データベース確認手順
+```
+mysql -h 127.0.0.1 -u docker sampledb -p
+```
+パスワードに「docker」と入力する。
+
 ```
 select * from articles;
 ```
