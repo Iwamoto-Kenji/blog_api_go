@@ -1,9 +1,9 @@
 # blog_api_go
 
 ## 技術構成
-* go
+* go1.19
 * gorilla
-* mysql
+* mysql5.7
 
 
 ```
@@ -12,6 +12,17 @@ function hello(){
 }
 ```
 
+## DB事前準備
+※GoとDockerはインストール済みの前提で記載しています。
+未インストールの際は下記ページ参照の上インストールして下さい。
+
+・Goインストール
+　https://go.dev/dl/
+
+・Dockerインストール
+　https://matsuand.github.io/docs.docker.jp.onthefly/get-docker/
+
+Dockerコンテナを起動する。
 ```
 docker-compose up
 ```
@@ -28,7 +39,7 @@ mysql -h 127.0.0.1 -u docker sampledb -p < repositories/testdata/setupDB.sql
 パスワードに「docker」と入力する。
 
 
-## 動作確認
+## API動作確認
 
 POST /article をテスト
 ```
@@ -36,11 +47,13 @@ curl http://localhost:8080/article -X POST -d '{"title":"a","contents":"b","user
 ```
 任意の記事を投稿する。
 
+
 GET /article/list をテスト
 ```
 curl http://localhost:8080/article/list -X GET
 ```
 投稿した記事が取得できていることを確認する。
+
 
 GET /article/id をテスト
 ```
@@ -56,17 +69,20 @@ curl http://localhost:8080/article/nice -X POST -d
 ```
 該当記事のniceを1増やす。
 
+
 GET /article/id をテスト
 ```
 curl http://localhost:8080/article/1 -X GET
 ```
 該当記事のniceが1増えていることを確認する。
 
+
 POST /comment をテスト
 ```
 curl http://localhost:8080/comment -X POST -d '{"article_id": 1,"message": "テストコメント"}'
 ```
 任意のコメントを投稿する。
+
 
 GET /article/id をテスト
 ```
