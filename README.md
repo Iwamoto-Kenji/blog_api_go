@@ -6,11 +6,15 @@
 * mysql5.7
 
 
-```
-function hello(){
-   return "hello world!";
-}
-```
+## API
+|    |メソッド|URI|
+| --------- | ----------- | ------- |
+|記事投稿|POST|/article|
+|全記事データを取得|GET|/article/list|
+|指定したIDの記事取得|GET|/article/:id|
+|指定した記事のniceを1増やす|POST|/article/nice|
+|指定した記事にコメント投稿|POST|/comment|
+
 
 ## DB事前準備
 ※GoとDockerはインストール済みの前提で記載しています。
@@ -33,6 +37,8 @@ go run main.go DB_USER=docker DB_PASSWORD=docker DB_NAME=sampledb
 ```
 
 データベースにテストデータを投入する。
+
+※データベースに接続する際、ポート3306を使用しているため、既に使用している場合killする必要があると思われます。
 ```
 mysql -h 127.0.0.1 -u docker sampledb -p < repositories/testdata/setupDB.sql
 ```
@@ -40,6 +46,8 @@ mysql -h 127.0.0.1 -u docker sampledb -p < repositories/testdata/setupDB.sql
 
 
 ## API動作確認
+
+### 正常系
 
 POST /article をテスト
 ```
@@ -90,11 +98,21 @@ curl http://localhost:8080/article/1 -X GET
 ```
 指定したIDの記事のコメントが取得できていることを確認する。
 
+### 異常系
+
+下記コマンドでデータベースサーバを止めておく。
+```
+mysql.server start
+```
+
+
+
+
 
 
 ## データベース確認手順
 
-ログイン
+データベースにログインする。
 
 ```
 mysql -h 127.0.0.1 -u docker sampledb -p
@@ -105,13 +123,13 @@ mysql -h 127.0.0.1 -u docker sampledb -p
 use sampledb;
 ```
 
-記事テーブル確認
+記事テーブルを確認する。
 
 ```
 select * from articles;
 ```
 
-コメントテーブル確認
+コメントテーブルを確認する。
 ```
 select * from comments;
 ```
