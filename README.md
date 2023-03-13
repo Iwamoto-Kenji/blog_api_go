@@ -2,7 +2,7 @@
 
 ## 技術構成
 * go1.19
-* gorilla
+* docker
 * mysql5.7
 
 
