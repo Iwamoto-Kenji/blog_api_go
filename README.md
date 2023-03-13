@@ -101,10 +101,30 @@ curl http://localhost:8080/article/1 -X GET
 
 下記コマンドでデータベースサーバを止めておく。
 ```
-mysql.server start
+docker-compose down
 ```
 
+・GET /article/list をテスト
+```
+curl http://localhost:8080/article/list -X GET
+```
+{"ErrCode":"S002","Message":"fail to get data"}が表示される。
+<br>
+<br>
 
+
+
+登録系操作確認のため下記コマンドでデータベースサーバを動作させる。
+```
+docker-compose up
+```
+・POST /article をテスト
+```
+curl http://localhost:8080/article -X POST -d '{"title":"a","contents":"b","user_name":"c",test}'
+```
+{"ErrCode":"S002","Message":"fail to get data"}が表示される。
+<br>
+<br>
 
 
 
