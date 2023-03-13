@@ -111,6 +111,12 @@ curl http://localhost:8080/article/list -X GET
 {"ErrCode":"S002","Message":"fail to get data"}が表示される。
 <br>
 <br>
+・GET /article/id をテスト
+```
+curl http://localhost:8080/article/1 -X GET
+```
+{"ErrCode":"S002","Message":"fail to get data"}が表示される。
+
 
 
 
@@ -122,11 +128,22 @@ docker-compose up
 ```
 curl http://localhost:8080/article -X POST -d '{"title":"a","contents":"b","user_name":"c",test}'
 ```
-{"ErrCode":"S002","Message":"fail to get data"}が表示される。
+{"ErrCode":"R001","Message":"bad request body"}が表示される。
 <br>
 <br>
-
-
+・POST /article/nice をテスト
+```
+curl http://localhost:8080/article/nice -X POST -d '{"article_id": 1,"title":"firstPost","contents": "This is my first blog","user_name": "user",test}'
+```
+{"ErrCode":"S004","Message":"does not exist target article"}
+<br>
+<br>
+・POST /comment をテスト
+```
+curl http://localhost:8080/comment -X POST -d '{"article_id": 1,"message": "テストコメント",test}'
+```
+{"ErrCode":"R001","Message":"bad request body"}
+{"ErrCode":"S001","Message":"fail to record data"}が表示される。
 
 
 ## データベース確認手順
