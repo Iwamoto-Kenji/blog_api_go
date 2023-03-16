@@ -1,5 +1,9 @@
 # blog_api_go
 
+## 概要
+記事とコメントを投稿する機能を持ったAPIです。
+ターミナルからコマンドを実行して動作確認を行います。
+
 ## 技術構成
 * go1.19
 * docker
@@ -169,7 +173,3 @@ select * from articles;
 ```
 select * from comments;
 ```
-
-
-
-
