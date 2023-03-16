@@ -139,7 +139,7 @@ curl http://localhost:8080/article -X POST -d '{"title":"a","contents":"b","user
 ```
 curl http://localhost:8080/article/nice -X POST -d '{"article_id": 1,"title":"firstPost","contents": "This is my first blog","user_name": "user",test}'
 ```
-{"ErrCode":"S004","Message":"does not exist target article"}
+{"ErrCode":"S004","Message":"does not exist target article"}が表示される。
 <br>
 <br>
 ・POST /comment をテスト
